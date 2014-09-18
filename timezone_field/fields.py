@@ -33,7 +33,7 @@ class TimeZoneFieldBase(models.Field):
 
     description = "A pytz timezone object"
 
-    CHOICES = [(pytz.timezone(tz), tz) for tz in pytz.all_timezones]
+    CHOICES = [tz, tz) for tz in pytz.all_timezones]
     MAX_LENGTH = 63
 
     def __init__(self, **kwargs):
@@ -43,6 +43,12 @@ class TimeZoneFieldBase(models.Field):
         }
         defaults.update(kwargs)
         super(TimeZoneFieldBase, self).__init__(**defaults)
+        
+    def deconstruct(self, **kwargs):
+        name, path, args, kwargs = super(TimeZoneFieldBase, self).deconstruct()
+        if self.choices != TimeZoneField.CHOICES:
+            kwargs['choices'] = self.choices
+        return name, path, args, kwargs
 
     def get_internal_type(self):
         return 'CharField'
